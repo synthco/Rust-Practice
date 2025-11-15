@@ -1,0 +1,32 @@
+//
+// Created by intellij-pest on 2025-11-15
+// grammar
+// Author: ivantyshchenko
+//
+
+// Пробіли між цифрами не допускаються
+integer = @{ ASCII_DIGIT+ }
+
+// Унарний мінус перед первинним виразом
+unary_minus = { "-" }
+
+// Первинний вираз: число або вираз у дужках
+primary = _{ integer | "(" ~ expr ~ ")" }
+
+// Атом може мати необов'язковий унарний мінус перед первинним виразом
+atom = _{ unary_minus? ~ primary }
+
+bin_op = _{ add | subtract | multiply | divide | modulo }
+	add = { "+" }
+	subtract = { "-" }
+	multiply = { "*" }
+	divide = { "/" }
+	modulo = { "%" }
+
+expr = { atom ~ (bin_op ~ atom)* }
+
+WHITESPACE = _{ " " }
+
+// Ми не можемо мати SOI та EOI безпосередньо на expr, тому що він використовується
+// рекурсивно (наприклад, у круглих дужках)
+equation = _{ SOI ~ expr ~ EOI }
